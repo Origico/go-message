@@ -538,7 +538,12 @@ func ReadHeader(r *bufio.Reader) (Header, error) {
 		// appear in the wild, violating specs, so we remove them if present.
 		i := bytes.IndexByte(kv, ':')
 		if i < 0 {
-			return newHeader(fs), fmt.Errorf("message: malformed MIME header line: %v", string(kv))
+			// return newHeader(fs), fmt.Errorf("message: malformed MIME header line: %v", string(kv))
+			equal := bytes.IndexByte(kv, '=') // in case of size=xxxx
+			if equal < 0 {
+				return newHeader(fs), fmt.Errorf("message: malformed MIME header line: %v", string(kv))
+			}
+			i = equal
 		}
 
 		keyBytes := trim(kv[:i])
